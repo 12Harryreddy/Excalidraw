@@ -1,0 +1,10 @@
+{
+    "extends": "@repo/typescript-config/base.json",
+    "compilerOptions": {
+        "typeRoots": ["./global.d.ts"],
+        "rootDir": "./src",
+        "outDir": "./dist"
+    },
+    "include": ["src", "global.d.ts"]
+
+}
