@@ -18,6 +18,7 @@
     "node": ">=18"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4",
     "axios": "^1.8.4"
   }
 }
