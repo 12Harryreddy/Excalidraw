@@ -1,4 +1,4 @@
-import { AuthPage } from "@/componants/AuthPage";
+import { AuthPage } from "@/components/authPage";
 
 
 

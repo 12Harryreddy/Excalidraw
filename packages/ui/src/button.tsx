@@ -16,7 +16,7 @@ interface ButtonProps {
 const variantStyles = {
   "primary": "bg-[#91766E] text-white",
   "secondary": "bg-[#87A7A9] text-black",
-  "outline": "bg-[#F6ECE3] text-[#91766E] border-1 border-black"
+  "outline": "bg-[#F6ECE3] text-[#91766E] border border-black"
 }
 
 const sizeStyles = {

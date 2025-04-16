@@ -5,11 +5,12 @@ import { middleware } from "./middleware"
 import {prismaClient} from "@repo/db/client"
 import {JWT_SECRET} from "@repo/backend-common/config"
 import bcrypt from "bcryptjs";
+import cors from "cors"
 const app = express()
 
 app.use(express.json())
 
-
+app.use(cors())
 app.post("/signup", async (req, res) => {
     try {
         const parsedData = createUserSchema.safeParse(req.body);
@@ -152,7 +153,6 @@ app.post("/room",middleware,async (req, res) => {
 
 app.get("/chats/:roomId", async (req, res) => {
    try {
-    console.log("in backend")
     const roomId = Number(req.params.roomId);
     const messages = await prismaClient.chat.findMany({
         where: {
@@ -163,7 +163,7 @@ app.get("/chats/:roomId", async (req, res) => {
         },
         take: 50
     })
-    console.log("after finding messages in backend")
+
     res.json({
         messages
     })
