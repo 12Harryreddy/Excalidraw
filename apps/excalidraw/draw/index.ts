@@ -13,7 +13,14 @@ type Shape = {
     type: "Circle",
     centerX: number,
     centerY: number,
-    radius: number
+    radiusX: number,
+    radiusY: number
+} | {
+    type: "Pencil",
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number
 };
 
 export async function initDraw(canvas: HTMLCanvasElement, roomId: string, socket: WebSocket) {
@@ -51,16 +58,37 @@ export async function initDraw(canvas: HTMLCanvasElement, roomId: string, socket
 
         canvas.addEventListener("mouseup", (e) => {
             isClicked = false
-            const width = e.clientX - startX;
-            const height = e.clientY -  starty;
-            const shape : Shape= {
-                type: "Rectangle",
-                startX: startX,
-                startY: starty,
-                width: width,
-                height: height
-            };
+           
+            let shape : Shape | null = null;
+            // @ts-ignore
+            const selectedTool = window.selectedTool;
+            if(selectedTool == "Rectangle") {
+                const width = e.clientX - startX;
+                const height = e.clientY -  starty;
+                shape= {
+                    type: "Rectangle",
+                    startX: startX,
+                    startY: starty,
+                    width: width,
+                    height: height
+                }
+            } 
+            if(selectedTool == "Circle") {
+                const centerX = (startX + e.clientX)/2;
+                const centerY = (starty + e.clientY) / 2;
+                const radiusX = Math.abs(startX - e.clientX);
+                const radiusY = Math.abs(starty - e.clientY);
+                shape = {
+                    type: "Circle",
+                    centerX: centerX,
+                    centerY: centerY,
+                    radiusX: radiusX,
+                    radiusY: radiusY
+                }
+            }
+            if(!shape) return;
             shapes.push(shape)
+           
             socket.send(JSON.stringify({
                     type: "chat",
                     message: JSON.stringify({shape}),
@@ -71,10 +99,27 @@ export async function initDraw(canvas: HTMLCanvasElement, roomId: string, socket
 
         canvas.addEventListener("mousemove", (e) => {
             if(isClicked) {
-                const width = e.clientX - startX;
-                const height = e.clientY -  starty;
-                clearCanvas(shapes,ctx, canvas);
-                ctx?.strokeRect(startX, starty, width, height);
+                // @ts-ignore
+                const selectedTool = window.selectedTool;
+                if(selectedTool == "Rectangle") {
+                    const width = e.clientX - startX;
+                    const height = e.clientY -  starty;
+                    clearCanvas(shapes,ctx, canvas);
+                    ctx?.strokeRect(startX, starty, width, height);
+                } 
+                
+                if(selectedTool == "Circle") {
+                    const centerX = (startX + e.clientX)/2;
+                    const centerY = (starty + e.clientY) / 2;
+                    const radiusX = Math.abs(startX - e.clientX);
+                    const radiusY = Math.abs(starty - e.clientY);
+                    clearCanvas(shapes,ctx,canvas);
+                    ctx.beginPath()
+                    ctx.ellipse(centerX,centerY, radiusX, radiusY, 0,0, 2 * Math.PI);
+                    ctx.strokeStyle = ("rgba(255,255,255)");
+                    ctx.stroke();
+                }
+                
             }
         })                
 }
@@ -83,12 +128,18 @@ function clearCanvas(shapes: Shape[], ctx: CanvasRenderingContext2D, canva: HTML
     ctx.clearRect(0,0,canva.width,canva.height);
     ctx.fillStyle = "rgba(0,0,0)";
     ctx.fillRect(0,0,canva.width, canva.height)
-
+    ctx.strokeStyle = "rgba(255,255,255)";
     shapes.map((shape) => {
         if(shape.type == "Rectangle") {
-            ctx.strokeStyle = "rgba(255,255,255)";
+            
             ctx.strokeRect(shape.startX, shape.startY, shape.width, shape.height);
+        } 
+        if(shape.type == "Circle") {
+            ctx.beginPath()
+            ctx.ellipse(shape.centerX,shape.centerY,shape.radiusX,shape.radiusY, 0,0, 2 * Math.PI);
+            ctx.stroke();
         }
+
     })
     
 }

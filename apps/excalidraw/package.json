@@ -9,10 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@repo/ui": "workspace:*",
+    "@uidotdev/usehooks": "^2.4.1",
+    "lucide-react": "^0.488.0",
     "next": "15.3.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "@repo/ui": "workspace:*"
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
